@@ -1,8 +1,15 @@
 from langchain_ollama.llms import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate
 from vector import retriever
+import os
 
-model = OllamaLLM(model="llama3.2")
+provider = os.getenv("PROVIDER", "ollama")
+
+if provider == "groq":
+    from langchain_groq import ChatGroq
+    model = ChatGroq(model=os.getenv("GROQ_MODEL", "openai/gpt-oss-20b"))
+else:
+    model = OllamaLLM(model="llama3.2")
 
 template = """
 You are an expert in commercial driver licensing.
@@ -25,5 +32,6 @@ while True:
     print(result)
     print("\nSources: pages", [doc.metadata["page"] + 1  for doc in docs])
     
-    for d in docs:
-       print(d.metadata["page"] + 1, d.page_content[:200])
+    # For debugging, you can uncomment the following lines to see the content of the retrieved documents:
+    # for d in docs:
+    #    print(d.metadata["page"] + 1, d.page_content[:200])
