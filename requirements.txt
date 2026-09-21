@@ -3,5 +3,9 @@ langchain-ollama
 langchain-chroma
 langchain-community
 langchain-text-splitters
+langchain-groq 
+langchain-huggingface
 pypdf
 cryptography
+fastapi 
+uvicorn
