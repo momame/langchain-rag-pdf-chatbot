@@ -180,14 +180,23 @@ Interactive API docs are at **http://localhost:8000/docs** (Swagger UI).
 
 ## 🐳 Docker
 
+The vector index is **built into the image at build time**, so the container starts ready to answer. Provide the PDF in one of two ways:
+
 ```bash
+# Option 1: PDF is in the project folder
 docker build -t cdl-rag .
+
+# Option 2: download the PDF during the build
+docker build --build-arg PDF_URL=https://example.com/manual.pdf -t cdl-rag .
+```
+
+```bash
 docker run -p 7860:7860 -e GROQ_API_KEY=your_key_here cdl-rag
 ```
 
-The image defaults to `PROVIDER=groq` and installs **CPU-only PyTorch** to keep it small. This setup fits Hugging Face Spaces (port 7860).
+The image defaults to `PROVIDER=groq` and installs **CPU-only PyTorch** to keep it small. This setup fits Hugging Face Spaces (port 7860). On Spaces, add `PDF_URL` as a **Variable** in the Space settings; Spaces passes variables to the build as build args.
 
-> ⚠️ Make sure `drive_commercial_veh_full.pdf` is in the build context. Otherwise the index can't be built on first start.
+> If no PDF is found, the **build** stops with a clear error, rather than the container crashing at startup.
 
 ---
 
@@ -198,6 +207,8 @@ The image defaults to `PROVIDER=groq` and installs **CPU-only PyTorch** to keep 
 | `PROVIDER`     | `ollama`              | `ollama` (local) or `groq` (cloud)            |
 | `GROQ_API_KEY` | none                  | Required when `PROVIDER=groq`                 |
 | `GROQ_MODEL`   | `openai/gpt-oss-20b`  | Any chat model available on Groq              |
+| `PDF_PATH`     | `drive_commercial_veh_full.pdf` | Path of the PDF to index              |
+| `PDF_URL`      | none                  | Download the PDF from here if `PDF_PATH` is missing |
 
 **Retrieval settings** (in code):
 
